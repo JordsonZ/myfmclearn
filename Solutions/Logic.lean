@@ -9,11 +9,18 @@ variable (P Q R : Prop)
 
 theorem doubleneg_intro :
   P → ¬ ¬ P  := by
-  sorry
+  intro hp
+  intro hnp
+  have hn : False := hnp hp
+  contradiction
 
 theorem doubleneg_elim :
   ¬ ¬ P → P  := by
-  sorry
+  intro hnp
+  by_cases h : P
+  exact h
+  have hf : False := hnp h
+  contradiction
 
 theorem doubleneg_law :
   ¬ ¬ P ↔ P  := by
@@ -26,12 +33,18 @@ theorem doubleneg_law :
 
 theorem disj_comm :
   (P ∨ Q) → (Q ∨ P)  := by
-  sorry
+  intro hpq
+  rcases hpq with (hp | hq)
+  right
+  exact hp
+  left
+  exact hq
 
 theorem conj_comm :
   (P ∧ Q) → (Q ∧ P)  := by
-  sorry
-
+  intro hpq
+  rcases hpq with ⟨hp , hq⟩
+  exact ⟨hq , hp⟩
 
 ------------------------------------------------
 -- Interdefinability of →,∨
@@ -39,11 +52,21 @@ theorem conj_comm :
 
 theorem impl_as_disj_converse :
   (¬ P ∨ Q) → (P → Q)  := by
-  sorry
+  intro hnpq
+  intro hp
+  rcases hnpq with (hnp | hq)
+  have hf : False := hnp hp
+  contradiction
+  exact hq
 
 theorem disj_as_impl :
   (P ∨ Q) → (¬ P → Q)  := by
-  sorry
+  intro hpq
+  intro hnp
+  rcases hpq with (hp | hq)
+  have hf : False := hnp hp
+  contradiction
+  exact hq
 
 
 ------------------------------------------------
@@ -52,7 +75,12 @@ theorem disj_as_impl :
 
 theorem impl_as_contrapositive :
   (P → Q) → (¬ Q → ¬ P)  := by
-  sorry
+  intro hpq
+  intro hnq
+  intro hp
+  have hq : Q := hpq hp
+  have hf : False := hnq hq
+  contradiction
 
 theorem impl_as_contrapositive_converse :
   (¬ Q → ¬ P) → (P → Q)  := by
@@ -159,11 +187,21 @@ theorem distr_disj_conj_converse :
 
 theorem curry_prop :
   ((P ∧ Q) → R) → (P → (Q → R))  := by
-  sorry
+  intro hpqr
+  intro hp
+  intro hq
+  apply hpqr
+  exact ⟨hp , hq⟩
+
 
 theorem uncurry_prop :
   (P → (Q → R)) → ((P ∧ Q) → R)  := by
-  sorry
+  intro hpqr
+  intro hpq
+  rcases hpq with ⟨hp , hq⟩
+  have hqr : Q → R := hpqr hp
+  have hr : R := hqr hq
+  exact hr
 
 
 ------------------------------------------------
@@ -188,15 +226,21 @@ theorem weaken_disj_right :
 
 theorem weaken_disj_left :
   Q → (P ∨ Q)  := by
-  sorry
+  intro hq
+  right
+  exact hq
 
 theorem weaken_conj_right :
   (P ∧ Q) → P  := by
-  sorry
+  intro hpq
+  rcases  hpq with ⟨hp , hq⟩
+  exact hp
 
 theorem weaken_conj_left :
   (P ∧ Q) → Q  := by
-  sorry
+  intro hpq
+  rcases hpq with ⟨hp , hq⟩
+  exact hq
 
 
 ------------------------------------------------
