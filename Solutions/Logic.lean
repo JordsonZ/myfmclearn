@@ -24,8 +24,16 @@ theorem doubleneg_elim :
 
 theorem doubleneg_law :
   ¬ ¬ P ↔ P  := by
-  sorry
-
+  constructor
+  intro hnp
+  by_cases h : P
+  exact h
+  have hf : False := hnp h
+  contradiction
+  intro hp
+  intro np
+  have hf : False := np hp
+  contradiction
 
 ------------------------------------------------
 -- Commutativity of ∨,∧
@@ -44,7 +52,9 @@ theorem conj_comm :
   (P ∧ Q) → (Q ∧ P)  := by
   intro hpq
   rcases hpq with ⟨hp , hq⟩
-  exact ⟨hq , hp⟩
+  constructor
+  exact hq
+  exact hp
 
 ------------------------------------------------
 -- Interdefinability of →,∨
@@ -84,12 +94,30 @@ theorem impl_as_contrapositive :
 
 theorem impl_as_contrapositive_converse :
   (¬ Q → ¬ P) → (P → Q)  := by
-  sorry
+  intro hnqnp
+  intro hp
+  by_cases h : Q
+  exact h
+  have hnp : ¬ P := hnqnp h
+  have hf : False := hnp hp
+  contradiction
 
 theorem contrapositive_law :
   (P → Q) ↔ (¬ Q → ¬ P)  := by
-  sorry
-
+  constructor
+  intro hpq
+  intro hnq
+  intro hp
+  have hq : Q := hpq hp
+  have hf : False := hnq hq
+  contradiction
+  intro hnqnp
+  intro hp
+  by_cases h : Q
+  exact h
+  have hnp : ¬ P := hnqnp h
+  have hf : False := hnp hp
+  contradiction
 
 ------------------------------------------------
 -- Irrefutability of LEM[P]
@@ -97,8 +125,13 @@ theorem contrapositive_law :
 
 theorem lem_irrefutable :
   ¬ ¬ (P ∨ ¬ P)  := by
-  sorry
-
+  intro hnpunp
+  apply hnpunp
+  right
+  intro hp
+  apply hnpunp
+  left
+  exact hp
 
 ------------------------------------------------
 -- Peirce's law
@@ -106,8 +139,16 @@ theorem lem_irrefutable :
 
 theorem peirce_law_weak :
   ((P → Q) → P) → ¬ ¬ P  := by
-  sorry
-
+  intro hpqp
+  intro hnp
+  by_cases h : P
+  have hf : False := hnp h
+  contradiction
+  apply h
+  apply hpqp
+  intro hp
+  have hf : False := h hp
+  contradiction
 
 ------------------------------------------------
 -- Linearity of →
@@ -115,8 +156,14 @@ theorem peirce_law_weak :
 
 theorem impl_linear :
   (P → Q) ∨ (Q → P)  := by
-  sorry
-
+  by_cases h : P
+  right
+  intro hq
+  exact h
+  left
+  intro hp
+  have hf : False := h hp
+  contradiction
 
 ------------------------------------------------
 -- Interdefinability of ∨,∧
@@ -124,12 +171,25 @@ theorem impl_linear :
 
 theorem disj_as_negconj :
   P ∨ Q → ¬ (¬ P ∧ ¬ Q)  := by
-  sorry
+  intro hpuq
+  intro hnpnq
+  rcases hnpnq with ⟨hnp , hnq⟩
+  rcases hpuq with (hp | hq)
+  have hf : False := hnp hp
+  contradiction
+  have hf: False := hnq hq
+  contradiction
 
 theorem conj_as_negdisj :
   P ∧ Q → ¬ (¬ P ∨ ¬ Q)  := by
-  sorry
-
+  intro hpq
+  intro hnpnq
+  rcases hpq with ⟨hp , hq⟩
+  rcases hnpnq with (hnp | hnq)
+  have hf : False := hnp hp
+  contradiction
+  have hf: False := hnq hq
+  contradiction
 
 ------------------------------------------------
 -- De Morgan laws for ∨,∧
@@ -137,28 +197,101 @@ theorem conj_as_negdisj :
 
 theorem demorgan_disj :
   ¬ (P ∨ Q) → (¬ P ∧ ¬ Q)  := by
-  sorry
+  intro hnpq
+  constructor
+  intro hp
+  apply hnpq
+  left
+  exact hp
+  intro hq
+  apply hnpq
+  right
+  exact hq
 
 theorem demorgan_disj_converse :
   (¬ P ∧ ¬ Q) → ¬ (P ∨ Q)  := by
-  sorry
+  intro hnpnq
+  intro hpuq
+  rcases hnpnq with ⟨hnp , hnq⟩
+  rcases hpuq with (hp | hq)
+  have hf : False := hnp hp
+  contradiction
+  have hf : False := hnq hq
+  contradiction
 
 theorem demorgan_conj :
   ¬ (P ∧ Q) → (¬ Q ∨ ¬ P)  := by
-  sorry
+  intro hnpq
+  by_cases h : Q
+  right
+  intro hp
+  apply hnpq
+  constructor
+  exact hp
+  exact h
+  left
+  intro hq
+  have hf : False := h hq
+  contradiction
 
 theorem demorgan_conj_converse :
   (¬ Q ∨ ¬ P) → ¬ (P ∧ Q)  := by
-  sorry
+  intro hnqnp
+  intro hpq
+  rcases hpq with ⟨hp , hq⟩
+  rcases hnqnp with (hnq | hnp)
+  have hf : False := hnq hq
+  contradiction
+  have hf : False := hnp hp
+  contradiction
+
 
 theorem demorgan_conj_law :
   ¬ (P ∧ Q) ↔ (¬ Q ∨ ¬ P)  := by
-  sorry
+  constructor
+  intro hnpq
+  by_cases h : Q
+  right
+  intro hp
+  apply hnpq
+  constructor
+  exact hp
+  exact h
+  left
+  intro hq
+  have hf : False := h hq
+  contradiction
+  intro hnqnp
+  intro hpq
+  rcases hpq with ⟨hp , hq⟩
+  rcases hnqnp with (hnq | hnp)
+  have hf : False := hnq hq
+  contradiction
+  have hf : False := hnp hp
+  contradiction
+
 
 theorem demorgan_disj_law :
   ¬ (P ∨ Q) ↔ (¬ P ∧ ¬ Q)  := by
-  sorry
-
+  constructor
+  intro hnpq
+  constructor
+  intro hp
+  apply hnpq
+  left
+  exact hp
+  intro hq
+  apply hnpq
+  right
+  exact hq
+  intro hnpnq
+  intro hpuq
+  rcases hnpnq with ⟨hnp , hnq⟩
+  rcases hpuq with (hp | hq)
+  have hf : False := hnp hp
+  contradiction
+  have hf : False := hnq hq
+  contradiction
 
 ------------------------------------------------
 -- Distributivity laws between ∨,∧
@@ -191,7 +324,9 @@ theorem curry_prop :
   intro hp
   intro hq
   apply hpqr
-  exact ⟨hp , hq⟩
+  constructor
+  exact hp
+  exact hq
 
 
 theorem uncurry_prop :
@@ -249,11 +384,25 @@ theorem weaken_conj_left :
 
 theorem disj_idem :
   (P ∨ P) ↔ P  := by
-  sorry
+  constructor
+  intro hpp
+  rcases hpp with (hp | hp)
+  exact hp
+  exact hp
+  intro hp
+  left
+  exact hp
 
 theorem conj_idem :
   (P ∧ P) ↔ P := by
-  sorry
+  constructor
+  intro hpp
+  rcases hpp with ⟨hp , hp⟩
+  exact hp
+  intro hp
+  constructor
+  exact hp
+  exact hp
 
 
 ------------------------------------------------
@@ -262,11 +411,13 @@ theorem conj_idem :
 
 theorem false_bottom :
   False → P := by
-  sorry
+  intro hf
+  contradiction
 
 theorem true_top :
   P → True  := by
-  sorry
+  intro hp
+  trivial
 
 
 end propositional
