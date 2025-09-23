@@ -299,20 +299,65 @@ theorem demorgan_disj_law :
 
 theorem distr_conj_disj :
   P ∧ (Q ∨ R) → (P ∧ Q) ∨ (P ∧ R)  := by
-  sorry
+  intro hpqr
+  rcases hpqr with ⟨hp , hqr⟩
+  rcases hqr with (hq | hr)
+  left
+  constructor
+  exact hp
+  exact hq
+  right
+  constructor
+  exact hp
+  exact hr
 
 theorem distr_conj_disj_converse :
   (P ∧ Q) ∨ (P ∧ R) → P ∧ (Q ∨ R)  := by
-  sorry
+  intro hpqpr
+  constructor
+  rcases hpqpr with (hpq | hpr)
+  rcases hpq with ⟨hp , hq⟩
+  exact hp
+  rcases hpr with ⟨hp , hr⟩
+  exact hp
+  rcases hpqpr with (hpq | hpr)
+  left
+  rcases hpq with ⟨hp , hq⟩
+  exact hq
+  right
+  rcases hpr with ⟨hp , hr⟩
+  exact hr
 
 theorem distr_disj_conj :
   P ∨ (Q ∧ R) → (P ∨ Q) ∧ (P ∨ R)  := by
-  sorry
+  intro hpqr
+  rcases hpqr with (hp | hqr)
+  constructor
+  left
+  exact hp
+  left
+  exact hp
+  rcases hqr with ⟨hq , hr⟩
+  constructor
+  right
+  exact hq
+  right
+  exact hr
 
 theorem distr_disj_conj_converse :
   (P ∨ Q) ∧ (P ∨ R) → P ∨ (Q ∧ R)  := by
-  sorry
-
+  intro hpqpr
+  rcases hpqpr with ⟨hpq , hpr⟩
+  rcases hpq with (hp | hq)
+  left
+  exact hp
+  rcases hpr with (hp | hr)
+  left
+  exact hp
+  right
+  constructor
+  exact hq
+  exact hr
 
 ------------------------------------------------
 -- Currying
